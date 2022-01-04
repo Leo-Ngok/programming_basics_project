@@ -1,7 +1,5 @@
 #include "global_var.h"
 using namespace std;
-char rta[200],rtb[200];
-char wda[200],wdb[200];
 
 struct like{ 
 	int sa_a;
@@ -311,17 +309,7 @@ void doDiff(int argc, char **argv)
 			zs0=0;
 		}
 	}
-    //linux path
-    strcpy(rta,gTerm.root);
-    strcpy(rtb,gTerm.root);
-    //windows path
-    strcpy(wda,gTerm.root);
-    strcpy(wdb,gTerm.root);
-    //link the
-    strcat(strcat(rta,"/"),argv[argc-2]);
-    strcat(strcat(rta,"/"),argv[argc-1]);
-    strcat(strcat(wda,gTerm.wdir),argv[argc-2]);
-    strcat(strcat(wdb,gTerm.wdir),argv[argc-1]);
+    
 	bool zs1=1;
     //check if flags are valid
 	for(int i=1;i<=argc-3;i++)
@@ -348,25 +336,21 @@ void doDiff(int argc, char **argv)
 	if(argc!=2)
 	{
 		ifstream fina;
-		if(gTerm.root[0]=='/') fina.open(rta);
-		else fina.open(wda);
+		fina.open(Physical_Path(argv[argc-2],true));
 		if(!fina){
 		cerr<<"diff: "<<argv[argc-2]<<": "<<"No such file or dictionary"<<endl;
-		cerr<<"Try 'diff --help' for more information"<<endl;
 		zs2=0;
 		}
 		fina.close();
 		
 		ifstream finb;
-		if(gTerm.root[0]=='/') finb.open(rtb);
-		else fina.open(wdb);
+        finb.open(Physical_Path(argv[argc-1],true));
 		if(!finb){
 		cerr<<"diff: "<<argv[argc-1]<<": "<<"No such file or dictionary"<<endl;
-		cerr<<"Try 'diff --help' for more information"<<endl;
 		zs2=0;
 		}
 		finb.close();
-		
+		cerr<<"Try 'diff --help' for more information"<<endl;
 	} 
 	//continue only if all arguments and files are valid
 	if((zs0==0)||(zs1==0)||(zs2==0))return; 
@@ -402,56 +386,28 @@ void doDiff(int argc, char **argv)
     //the case when both are files
 	if((strcmp(argv[argc-2],"-"))&&(strcmp(argv[argc-1],"-")))
 	{
-        //in linux
-        if(gTerm.root[0]=='/')
+		//push the file contents into the array of strings
+		ifstream fin1;
+		fin1.open(Physical_Path(argv[argc-2],true));
+		while(true)
         {
-            ifstream fin1;
-            fin1.open(rta);
-            //push the file contents into the array of strings
-            while(true)
-            {
-                getline(fin1,a[hx_a]);
-                if(fin1.eof())break;
-                hx_a++;
-            }
-            fin1.close();
-
-            ifstream fin2;
-            fin2.open(rtb);
-            while(true)
-            {
-                getline(fin2,b[hx_b]);
-                if(fin2.eof())break;
-                hx_b++;
-            }
-            fin2.close();
+            getline(fin1,a[hx_a]);
+            if(fin1.eof())break;
+            hx_a++;
         }
-        //in windows
-        else
+        fin1.close();
+
+        ifstream fin2;
+        fin2.open(Physical_Path(argv[argc-1],true));
+        while(true)
         {
-            ifstream fin1;
-            fin1.open(wda);
-            while(true)
-            {
-                getline(fin1,a[hx_a]);
-                if(fin1.eof())break;
-                hx_a++;
-            }
-            fin1.close();
-
-            ifstream fin2;
-            fin2.open(wdb);
-            while(true)
-            {
-                getline(fin2,b[hx_b]);
-                if(fin2.eof())break;
-                hx_b++;
-            }
-            fin2.close();
+            getline(fin2,b[hx_b]);
+            if(fin2.eof())break;
+            hx_b++;
         }
-	
-	}
-	else 
+        fin2.close();
+    }
+	else
 	{
         //FILE1 is standard input
 		if(!(strcmp(argv[argc-2],"-"))&&strcmp(argv[argc-1],"-"))
@@ -470,6 +426,16 @@ void doDiff(int argc, char **argv)
 				hx_a++;
 				i++; 
 			}
+			ifstream fin2;
+        	fin2.open(Physical_Path(argv[argc-1],true));
+        	while(true)
+        	{
+            	getline(fin2,b[hx_b]);
+            	if(fin2.eof())break;
+            	hx_b++;
+        	}
+        	fin2.close();
+			
 		}
         //FILE2 is standard input
 		else if(!(strcmp(argv[argc-1],"-"))&&strcmp(argv[argc-2],"-"))
@@ -488,6 +454,16 @@ void doDiff(int argc, char **argv)
 				hx_b++;
 				i++; 
 			}
+			ifstream fin1;
+		    fin1.open(Physical_Path(argv[argc-2],true));
+			printf("%s\n",Physical_Path(argv[argc-2],true));
+			while(true)
+        	{
+            	getline(fin1,a[hx_a]);
+            	if(fin1.eof())break;
+            	hx_a++;
+        	}
+        	fin1.close();
 		}
         //both are standard input
 		else
@@ -529,7 +505,7 @@ void doDiff(int argc, char **argv)
 	if(s_g[5]==1)
 	{
 		char *Ibj=argv[I];
-		char is[100];
+		char is[100]={0};
 		int i_ls=0;
 		for(int i=strcspn(Ibj,"I")+1;i<strlen(Ibj);i++)
 		{
@@ -556,7 +532,7 @@ void doDiff(int argc, char **argv)
 				x=1;
 			}
 		}			
-		if(x==1){
+		if(x==0){
 			ofstream foutI("answer.txt");
 			foutI.close();
 			return;
