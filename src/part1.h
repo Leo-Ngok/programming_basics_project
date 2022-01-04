@@ -25,6 +25,17 @@ void sc()
 		_tmp+=ls+"\n";
 	}
 	strcpy(gTerm.strout,_tmp.c_str());
+	for(int i=0;i<=299;i++){
+		same[i].sa_a=0;
+		same[i].sa_b=0;
+		a[i]="";
+		b[i]="";
+	}
+	I=0;
+	sai=1;
+	_tmp="";
+	ls="";
+	for(int i=0;i<=5;i++)s_g[i]=0;
 }
 
 void judge(int hang,int hx_b)
@@ -222,9 +233,9 @@ void change(int tg,ofstream &fcg,int ia)
                 if(xlsb==1)
                 {
                     fcg<<same[tg].sa_a<<"a"<<same[tg].sa_b+1<<endl;
-                    int ils=same[tg].sa_b+1;
+                    int ils=same[tg].sa_b;
                     int ilsb=-1;
-                    while(ils<same[tg+ia].sa_b){
+                    while(ils<same[tg+ia].sa_b-1){
                         ilsb++;
                         ils++;
                         if(xb[ilsb]!=0)continue;
@@ -238,13 +249,13 @@ void change(int tg,ofstream &fcg,int ia)
                 if(xlsa==1)
                 {
                     fcg<<same[tg].sa_a+1<<"d"<<same[tg].sa_b<<endl;
-                    int ils=same[tg].sa_a+1;
+                    int ils=same[tg].sa_a;
                     int ilsa=-1;
-                    while(ils<same[tg+ia].sa_a){
+                    while(ils<same[tg+ia].sa_a-1){
                         ilsa++;
                         ils++;
                         if(xa[ilsa]!=0)continue;
-                        fcg<<"<"<<a[ils+1]<<endl;
+                        fcg<<"<"<<a[ils]<<endl;
                     }
                 }
             }
@@ -565,7 +576,7 @@ void doDiff(int argc, char **argv)
 	if(s_g[3]==1)
 	{
 		bool x=1;
-		for(int i=0;i<=sai;sai++){
+		for(int i=0;i<=sai;i++){
 			if(same[i].sa_a!=same[i].sa_b){
 			x=0;break;
 			} 
@@ -596,6 +607,8 @@ void doDiff(int argc, char **argv)
 	}
 	fcg.close();
 	sc();
+	hx_a=0;
+	hx_b=0;
 	return;
 
 }
