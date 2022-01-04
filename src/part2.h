@@ -256,11 +256,7 @@ void doGrep(int argc, char* argv[]){
                 // *** 3.如何判断命令行末尾参数有多文件的情况：循环读入，每次读入新的文件
                 //（可设置文件最大读取数量为 MAX_FILE_NUM, 单个文件最多字符数 MAX_CHAR_NUM）
                 memset(file[file_cnt].filepath,0,sizeof (file[file_cnt].filepath));
-                strcat(file[file_cnt].filepath, gTerm.root);
-                //strcat(file[file_cnt].filepath, "/");
-                strcat(file[file_cnt].filepath, gTerm.wdir);
-                strcat(file[file_cnt].filepath, "/");
-                strcat(file[file_cnt].filepath, argv[i]);
+                strcat(file[file_cnt].filepath,Physical_Path(argv[i], true));
                 //fin.open(argv[i]); // 读入文件
                 fin.open(file[file_cnt].filepath);
                 if(fin){ // 文件存在
