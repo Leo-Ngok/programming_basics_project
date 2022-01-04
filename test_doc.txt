@@ -26,7 +26,7 @@ cp -n CONFIG_LEGACY.json ../echo_help.txt
 cat ../echo_help.txt
 cat -n -E CONFIG_LEGACY.json CONFIG_CURR.json
 cat -b -s Server.py
-cat -b- n CONFIG_LEGACY.json
+cat -b -n CONFIG_LEGACY.json
 cp  CONFIG_LEGACY.json ../echo_help.txt
 cat ../echo_help.txt
 #-----------illustrations of diff-------------------

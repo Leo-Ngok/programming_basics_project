@@ -1,1069 +1,269 @@
-#include "global_var.h"/*
-#include <string>
-#include <cstring>
-#include "fstream"
-std::string get_abs_path()
+#include "global_var.h"
+
+char pwdhelp[]="pwd: pwd \
+\n    Print the name of the current working directory.";
+char teehelp[]="Usage: tee [OPTION]... [FILE]...\
+Copy standard input to each FILE, and also to standard output.\
+\n\
+\n  -a			 append to the given FILEs, do not overwrite\
+\n  --help     display this help and exit\
+\n\
+\nTinyShell online help: <https://github.com/Leo-Ngok/programming_basics_project>\
+\nReport tee bugs to <yuezq21@mails.tsinghua.edu.cn>\
+\nFull documentation at: <https://github.com/Leo-Ngok/programming_basics_project>\
+\n";
+char cdhelp[]="cd: cd [DIR]\
+    Change the shell working directory.\
+\n    \
+\n    Change the current directory to DIR.\
+\n    \
+\n\
+\n    \
+\n    Options:\
+\n      --help          display this help and exit\
+\n    \
+\n    `..' is processed by removing the immediately previous pathname component\
+\n    back to a slash or the beginning of DIR.\
+\n";
+char cphelp[]="Usage: cp [OPTION]... SOURCE DEST\
+\nCopy SOURCE to DEST.\
+\n\
+\n  -n,            do not overwrite an existing file\
+\n      --help     display this help and exit\
+\n\
+\nTinyShell online help: <https://github.com/Leo-Ngok/programming_basics_project>\
+\nReport cp bugs to <yuezq21@mails.tsinghua.edu.cn>\
+\nFull documentation at: <https://github.com/Leo-Ngok/programming_basics_project>\
+\n";
+char cathelp[]="Usage: cat [OPTION]... [FILE]...\
+\n Concatenate FILE(s) to standard output.\
+\n\
+\n With no FILE, or when FILE is -, read standard input.\
+\n\
+\n  -b,  number nonempty output lines, overrides -n\
+\n  -E,  display $ at end of each line\
+\n  -n,  number all output lines\
+\n  -s,  suppress repeated empty output lines\
+\n\
+\nExamples:\
+\n  cat        Copy standard input to standard output.\
+\n\
+\nGNU coreutils online help: <https://github.com/Leo-Ngok/programming_basics_project>\
+\nReport cat translation bugs to <yuezq21@mails.tsinghua.edu.cn>\
+\nFull documentation at: <https://github.com/Leo-Ngok/programming_basics_project>\
+\n";
+inline int _getc(FILE* doc,int *pos)
 {
-	std::string s;
-	s=gTerm.root;
-	s+=gTerm.wdir;
-	return s;
-}
-void doTee(int argc, char **argv)
-{
-    std::ios_base::openmode mode;
-    if(argc>=2)
+    if(doc==NULL)
     {
-        int i=1;
-        bool _append=false;
-        for (;i<argc&&argv[i][0]=='-'&& strlen(argv[i])>1;i++)
-        {
-            int k=1;
-            bool _not_flag=false;
-            while(k<strlen(argv[i]))
-            {
-                _not_flag=(argv[i][k++]!='a');
-                if(_not_flag)break;
-            }
-            if(!_not_flag){_append=true;}
-            else break;
-        }
-    	if(_append)
-    	{
-        	mode=std::ios_base::app;
-    	}
-    	else
-    	{
-        	mode=std::ios_base::out;
-    	}
-    	i+=_append;
-    	for(;i<argc;i++)
-    	{
-        	std::fstream fs;
-        	std::string filepath;
-        	if(argv[i][0]!='/')
-        	{
-        		filepath=get_abs_path();
-        		filepath+="/";
-        		filepath+=argv[i];
-        	}
-        	fs.open(filepath.c_str(),mode);
-        	fs<<gTerm.strin;
-        	fs.close();
-    	}
+        return gTerm.strin[(*pos)++];
     }
-    strcpy(gTerm.strout,gTerm.strin);
+    else
+    {
+        return fgetc(doc);
+    }
 }
-void doCat(int argc, char **argv)
-{
-    std::ofstream fout("doc1.txt");
-}
-void doCp(int argc, char **argv)
-{
-
-}
-void doCd(int argc, char **argv)
-{
-
-}
-void doPwd(int argc, char **argv)
-{
-
-}
-*/
-using namespace std;
-string tmpstr[999999];
-string name[999999];
-string transp[1000];//定义的三个全局变量 后面会用到 
-
 void doCat(int argc, char * argv[])
 {
-	if(argc==1)
-	{
-		cerr<<"wrong demands"<<endl;
-		return;
-	}
-	string Root=gTerm.root;string Wdir=gTerm.wdir;//切换成字符串可以直接加减 
-	for(int i=0;i<999999;i++)
-	{
-		stringstream ss;
-		ss<<i+1;
-		name[i]=ss.str();	
-	}
-	for(int i=0;i<999999;i++)
-        while(name[i].length()<6)
-            name[i]=" "+name[i]; //构建序号字符串数组
 	bool flag[4];
-	for(int i =0;i<4;i++) flag[i]=false;
-	for(int i =0;i<argc;i++)
+    memset(flag,false,sizeof flag);
+    register int i=1;
+	for(;i<argc;i++)
 	{
-		if((string)argv[i]=="-n") flag[0]=true;
-		if((string)argv[i]=="-b") flag[1]=true;
-		if((string)argv[i]=="-s") flag[2]=true;
-		if((string)argv[i]=="-E") flag[3]=true;
+        if(argv[i][0]!='-'||argv[i][1]=='\0')break;
+        switch (argv[i][1]) {
+            case 'n':flag[0]=true;break;
+            case 'b':flag[1]=true;break;
+            case 's':flag[2]=true;break;
+            case 'E':flag[3]=true;break;
+        }
 	}//"判定是否有相应的功能"
-	int j;int row = 0;int time=0;
-	string *str=new string[argc];
-	for(int i=0;i<argc;i++)
-		str[i]=argv[i];
-	if(str[1]=="--help")
+    if(argc==i) {
+        argc++;
+        argv=(char**)realloc(argv,2);
+        argv[i]=new char[1];
+        argv[i][0]='-';
+    }
+	if(strcmp(argv[i],"--help")==0)
 	{
-		string help[100];
-		ifstream A("cat.txt");
-		if(!A)
-		{
-		    cerr<<"no such file";
-		    return;
-	    }
-		int H=0;
-		while(!A.eof())
-		{
-			getline(A,help[H++]);
-		}
-		A.close();	
-		for(int q =0;q<H;q++)
-		{
-			cinStrout(help[q].c_str());
-			cinStrout('\n');
-		}
-
-	}//输出help 
-	if(str[1]!="--help")//不是help的情况 
-	{
-		
-		string path = gTerm.wdir;
-		
-		for(int i = 1;i<argc;i++)
-		{	
-			if(str[i]!="-n"&&str[i]!="-b"&&str[i]!="-s"&&str[i]!="-E") {j=i;break;}//判定第一个文件的位置 
-		}
-		for(int i =j;i<argc;i++)
-		{
-			if(str[i]=="-")//是-的情况			
-			{
-				int head=0;
-				int b = sizeof(gTerm.strin);
-				for(int i=0;i<b-1;i++)
-				{
-					if(gTerm.strin[i]=='\n')
-					{
-						tmpstr[row]=((string)gTerm.strin).substr(head,i-head);
-						head=i+1;row++;
-					}
-				}
-				tmpstr[row]=((string)gTerm.strin).substr(head,b-1);row++;
-			}//读取strin 
-			else
-			{	//先处理文件名 
-				string NAME;
-				if(str[i][0]=='/')
-				{
-					if(Root=="/") NAME=str[i];
-					if(Root!="/") NAME=Root+str[i];
-				
-				}
-				if(str[i][0]!='/')
-				{
-					if(Root=="/") 
-					{
-						if(Wdir=="/") NAME="/"+str[i];
-						if(Wdir!="/") NAME=Wdir+"/"+str[i];
-					}
-					if(Root!="/") 
-					{
-						if(Wdir=="/") NAME=Root+"/"+str[i];
-						if(Wdir!="/") NAME=Root+Wdir+"/"+str[i];
-					}
-				}
-				ifstream fin(NAME.c_str());
-				if(!fin)
-				{
-					
-			
-				cerr<<"no such file"<<endl;
-				return;
-			
-				}
-				while(!fin.eof())
-				{
-					getline(fin,tmpstr[row]);
-					row++;
-				}//使用getline函数逐行读取 
-				fin.close();
-			}//读取文件 
-		}
-		if(flag[0]==true&&flag[1]==false&&flag[2]==false&&flag[3]==false)//deal with tmpstr[i] 
-		{
-			for(int i=0;i<row;i++)
-			{
-				tmpstr[i]=name[i]+"  "+tmpstr[i]+"\n";
-				for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==true&&flag[1]==false&&flag[2]==false&&flag[3]==true)
-		{
-			for(int i=0;i<row;i++)
-			{
-				tmpstr[i]=name[i]+"  "+tmpstr[i]+"$"+"\n";
-				for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==true&&flag[2]==false&&flag[3]==true)
-		{
-			int oyyz=0;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=name[oyyz]+"  "+tmpstr[i]+"$"+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(tmpstr[i]=="")
-				{	
-					gTerm.strout[time]='$';
-					time++;
-					gTerm.strout[time]='\n';
-					time++;
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==true&&flag[2]==false&&flag[3]==false)
-		{
-			int oyyz=0;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=name[oyyz]+"  "+tmpstr[i]+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(tmpstr[i]=="")
-				{
-					gTerm.strout[time]='\n';
-					time++;
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==true&&flag[2]==false&&flag[3]==true)
-		{
-			int oyyz=0;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=name[oyyz]+"  "+tmpstr[i]+"$"+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(tmpstr[i]=="")
-				{	gTerm.strout[time]='$';
-					time++;
-					gTerm.strout[time]='\n';
-					time++;
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==true&&flag[1]==false&&flag[2]==true&&flag[3]==false)
-		{
-			int oyyz=0;string timely;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=name[oyyz]+"  "+tmpstr[i]+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(i==0&&tmpstr[i]=="")
-				{	
-					timely=name[oyyz]+"  "+"\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;//这里不处理s【】 是避免影响空白行的判断 
-					}
-				}
-				if(i>0&&tmpstr[i]==""&&tmpstr[i-1]!="")
-				{
-					timely=name[oyyz]+"  "+"\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;
-					}
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==true&&flag[1]==false&&flag[2]==true&&flag[3]==true)
-		{
-			int oyyz=0;string timely;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=name[oyyz]+"  "+tmpstr[i]+"$"+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(i==0&&tmpstr[i]=="")
-				{
-					timely=name[oyyz]+"  "+"$"+"\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;
-					}
-				}
-				if(i>0&&tmpstr[i]==""&&tmpstr[i-1]!="")
-				{
-					timely=name[oyyz]+"  "+"$"+"\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;
-					}
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==true&&flag[2]==true&&flag[3]==false)
-		{
-			int oyyz=0;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=name[oyyz]+"  "+tmpstr[i]+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(i==0&&tmpstr[i]=="")
-				{
-					gTerm.strout[time]='\n';time++;
-				}
-				if(i>0&&tmpstr[i]==""&&tmpstr[i-1]!="")
-				{
-					gTerm.strout[time]='\n';time++;
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==true&&flag[2]==true&&flag[3]==true)
-		{
-			int oyyz=0;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=name[oyyz]+"  "+tmpstr[i]+"$"+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(i==0&&tmpstr[i]=="")
-				{	
-					gTerm.strout[time]='$';time++;
-					gTerm.strout[time]='\n';time++;
-				}
-				if(i>0&&tmpstr[i]==""&&tmpstr[i-1]!="")
-				{
-					gTerm.strout[time]='$';time++;
-					gTerm.strout[time]='\n';time++;
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==false&&flag[2]==false&&flag[3]==false)
-		{
-			for(int i=0;i<row;i++)
-			{
-				tmpstr[i]=tmpstr[i]+"\n";
-				for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==false&&flag[2]==false&&flag[3]==true)
-		{
-			for(int i=0;i<row;i++)
-			{
-				tmpstr[i]=tmpstr[i]+"$"+"\n";
-				for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==false&&flag[2]==true&&flag[3]==false)
-		{
-			int oyyz=0;string timely;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=tmpstr[i]+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(i==0&&tmpstr[i]=="")
-				{
-					timely="\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;
-					}
-				}
-				
-				if(i>0&&tmpstr[i]==""&&tmpstr[i-1]!="")
-				{
-					timely="\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;
-					}
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-		if(flag[0]==false&&flag[1]==false&&flag[2]==true&&flag[3]==true)
-		{
-			int oyyz=0;string timely;
-			for(int i=0;i<row;i++)
-			{
-				if(tmpstr[i]!="")
-				{
-					tmpstr[i]=tmpstr[i]+"$"+"\n";oyyz++;
-					for(int t=0;t<tmpstr[i].length();t++)
-					{
-						gTerm.strout[time]=tmpstr[i][t];
-						time++;
-					}
-				}
-				if(i==0&&tmpstr[i]=="")
-				{
-					timely="$";timely=timely+"\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;
-					}
-				}
-				if(i>0&&tmpstr[i]==""&&tmpstr[i-1]!="")
-				{
-					timely="$";timely=timely+"\n";oyyz++;
-					for(int t=0;t<timely.length();t++)
-					{
-						gTerm.strout[time]=timely[t];
-						time++;
-					}
-				}
-			}
-			gTerm.strout[time]='\0';
-		}
-	}
-
+        strcpy(gTerm.strout, cathelp);
+        return;
+	}//输出help
+    int linenum=0;
+    int buffer,pprev=0,prev='\n';
+    for(;i<argc;i++)
+    {
+        int *pos=new int(0);
+        FILE *source=NULL;
+        if(strcmp(argv[i],"-")!=0)
+        {
+            source= fopen(Physical_Path(argv[i],true),"r");
+            if(source==NULL)
+            {
+                output_no_file_error("cat",argv[i]);
+                fclose(source);
+                continue;
+            }
+        }
+        bool line_head=true;
+        buffer = _getc(source, pos);
+        while(buffer>0)
+        {
+            //if it is a consecutive blank line
+            bool consecutive_line_empty=pprev==prev&&prev==buffer&&buffer=='\n';
+            //if -s (suppress repeated empty lines is enabled)
+            if(consecutive_line_empty&&flag[2])goto next_iter;
+            //output line number
+            if((flag[0]||flag[1])&&prev=='\n')
+            {
+                if(!flag[1]||(flag[1]&&buffer!='\n'))
+                {
+                    linenum++;
+                    int t=linenum,iiii=0;
+                    char idx[10];
+                    memset(idx,0,sizeof idx);
+                    while(t)
+                    {
+                        idx[iiii++]=t%10+'0';
+                        t/=10;
+                    }
+                    while(iiii<6)idx[iiii++]=' ';
+                    for(int w=5;w>=0;w--)cinStrout(idx[w]);
+                    cinStrout("  ");
+                }
+                line_head= false;
+            }
+            //output ending dollar sign
+            if(buffer=='\n')
+            {
+                line_head=true;
+                if(flag[3])cinStrout('$');
+            }
+            else line_head= false;
+            cinStrout(buffer);
+            next_iter:
+            pprev=prev;
+            prev=buffer;
+            buffer = _getc(source, pos);
+        }
+        fclose(source);
+    }
 }
 	
 void doCp(int argc, char * argv[])
 {
-	string *str=new string[argc];
-	for(int i=0;i<argc;i++)
-		str[i]=argv[i];
 	if(argc==1)
 	{
-		cerr<<"wrong demands"<<endl;
+		std::cerr<<"cp: missing file operand"<<std::endl;
+        std::cerr<<"Try 'cp --help' for more information."<<std::endl;
 		return;
 	}
-	if(str[1]=="--help")
+	if(strcmp(argv[1],"--help")==0)
 	{
 		//shurubangzhu; 
-		string help[100];
-		ifstream A("cp.txt");
-		if(!A)
-		{
-		    cerr<<"no such file"<<endl;
-		    return;
-	    }
-		    
-		int H=0;int hhh=0;
-		while(!A.eof())
-		{
-			getline(A,help[H]);H++;}
-		A.close();	
-		for(int q =0;q<H;q++)
-		{
-		for(int len=0;len<help[q].length();len++)
-		{
-			gTerm.strout[hhh]=help[q][len];hhh++;
-		}
-		gTerm.strout[hhh]='\n';hhh++;
-		}
-		gTerm.strout[hhh]='\0';
+        strcpy(gTerm.strout,cphelp);
+        return;
 	}
-	else
-	{
-        if(argc>4)
-        {
-            cerr<<"wrong demands"<<endl;
+    int i=1;
+    bool no_clobber=false;
+    while(strcmp(argv[i],"-n")==0)
+    {
+        i++;
+        no_clobber=true;
+    }
+    if(argc-i>2)
+    {
+        std::cerr<<"bash: cp: too many arguments"<<std::endl;
+        return;
+    }
+    if(strcmp(argv[i],argv[i+1])==0&&!no_clobber)
+    {
+        std::cerr<<"cp: '"<<(string)argv[i]<<"' and '"<<(string)argv[i]<<"' are the same file"<<std::endl;
+        return;
+    }
+    if(strcmp(argv[i+1],"-")==0)return;
+    if(no_clobber)
+    {        //处理文件名
+        FILE *dest = fopen(Physical_Path(argv[i + 1], true), "r");
+        if (dest != NULL) {
+            fclose(dest);
             return;
         }
-        if(str[1]=="-n")
-        {		//处理文件名
-            if(str[2]=="-"&&str[3]=="-") strcat(gTerm.strout,gTerm.strin);
-            if(str[2]=="-"&&str[3]!="-")
-            {
-                string f2;
-                string Root=gTerm.root;
-                string Wdir=gTerm.wdir;
-                if(str[3][0]=='/')
-                {
-                    if(Root=="/") f2=str[3];
-                    if(Root!="/") f2=Root+str[3];
-
-                }
-                if(str[3][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f2="/"+str[3];
-                        if(Wdir!="/") f2=Wdir+"/"+str[3];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f2=Root+"/"+str[3];
-                        if(Wdir!="/") f2=Root+Wdir+"/"+str[3];
-                    }
-                }
-                ofstream B(f2.c_str(),ios::app);
-                if(!B)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                B<<gTerm.strin;
-                B.close();
-            }
-            if(str[2]!="-"&&str[3]=="-")//对文件名的各种情况进行进一步讨论
-            {
-                string f1;
-                string Root=gTerm.root;
-                string Wdir=gTerm.wdir;
-                if(str[2][0]=='/')
-                {
-                    if(Root=="/") f1=str[2];
-                    if(Root!="/") f1=Root+str[2];
-
-                }
-                if(str[2][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f1="/"+str[2];
-                        if(Wdir!="/") f1=Wdir+"/"+str[2];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f1=Root+"/"+str[2];
-                        if(Wdir!="/") f1=Root+Wdir+"/"+str[2];
-                    }
-                }
-                ifstream A(f1.c_str());
-                if(!A)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                int trans=0;int wuwuwu=0;
-                while(!A.eof())
-                {
-                    getline(A,transp[trans]);trans++;
-                }
-                A.close();
-                for(int q =0;q<trans;q++)
-                {
-                    for(int len=0;len<transp[q].length();len++)
-                    {
-                        gTerm.strout[wuwuwu]=transp[q][len];wuwuwu++;
-                    }
-                    gTerm.strout[wuwuwu]='\n';wuwuwu++;
-                }
-                gTerm.strout[wuwuwu]='\0';
-
-            }
-            if(str[2]!="-"&&str[3]!="-")
-            {
-
-                string f1;string f2;
-                string Root=gTerm.root;
-                string Wdir=gTerm.wdir;
-                if(str[2][0]=='/')
-                {
-                    if(Root=="/") f1=str[2];
-                    if(Root!="/") f1=Root+str[2];
-
-                }
-                if(str[3][0]=='/')
-                {
-                    if(Root=="/") f2=str[3];
-                    if(Root!="/") f2=Root+str[3];
-
-                }
-                if(str[2][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f1="/"+str[2];
-                        if(Wdir!="/") f1=Wdir+"/"+str[2];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f1=Root+"/"+str[2];
-                        if(Wdir!="/") f1=Root+Wdir+"/"+str[2];
-                    }
-                }
-                if(str[3][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f2="/"+str[3];
-                        if(Wdir!="/") f2=Wdir+"/"+str[3];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f2=Root+"/"+str[3];
-                        if(Wdir!="/") f2=Root+Wdir+"/"+str[3];
-                    }
-                }
-                ifstream A(f1.c_str());
-                ofstream B(f2.c_str(),ios::app);
-                if(!A)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                if(!B)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                while(!A.eof())
-                {
-                    string ch;
-                    getline(A,ch);
-                    if(A.eof()) B << ch;
-                    else B<<ch<<endl;
-                }
-
-
-                A.close();
-                B.close();
-            }
+        fclose(dest);
+    }
+    FILE *dest= fopen(Physical_Path(argv[i+1],true),"w");
+    if(strcmp(argv[i],"-")==0)
+    {
+        fprintf(dest,"%s",gTerm.strin);
+    }
+    else
+    {
+        FILE *source= fopen(Physical_Path(argv[i],true),"r");
+        if(source==NULL) {
+            output_no_file_error("cp",argv[i]);
+            fclose(source);
+            return;
         }
-        if((string)argv[1]!="-n")
-        {
-            if(str[1]=="-"&&str[2]=="-") strcpy(gTerm.strout,gTerm.strin);
-            if(str[1]=="-"&&str[2]!="-")
-            {
-                string f2;
-                string Root=gTerm.root;
-                string Wdir=gTerm.wdir;
-                if(str[2][0]=='/')
-                {
-                    if(Root=="/") f2=str[2];
-                    if(Root!="/") f2=Root+str[2];
+        int buffer=0;
+        while((buffer=fgetc(source))!=-1)
+            fprintf(dest,"%c",buffer);
 
-                }
-                if(str[2][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f2="/"+str[2];
-                        if(Wdir!="/") f2=Wdir+"/"+str[2];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f2=Root+"/"+str[2];
-                        if(Wdir!="/") f2=Root+Wdir+"/"+str[2];
-                    }
-                }
-                ofstream B(f2.c_str());
-                if(!B)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                B<<gTerm.strin;
-                B.close();
-            }
-            if(str[1]!="-"&&str[2]=="-")
-            {
-                string f1;
-                string Root=gTerm.root;
-                string Wdir=gTerm.wdir;
-                if(str[1][0]=='/')
-                {
-                    if(Root=="/") f1=str[1];
-                    if(Root!="/") f1=Root+str[1];
-
-                }
-                if(str[1][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f1="/"+str[1];
-                        if(Wdir!="/") f1=Wdir+"/"+str[1];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f1=Root+"/"+str[1];
-                        if(Wdir!="/") f1=Root+Wdir+"/"+str[1];
-                    }
-                }
-                ifstream A(f1.c_str());
-                if(!A)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                int trans=0;int wuwuwu=0;
-                while(!A.eof())
-                {
-                    getline(A,transp[trans]);trans++;
-                }
-                A.close();
-                for(int q =0;q<trans;q++)
-                {
-                    for(int len=0;len<transp[q].length();len++)
-                    {
-                        gTerm.strout[wuwuwu]=transp[q][len];wuwuwu++;
-                    }
-                    gTerm.strout[wuwuwu]='\n';wuwuwu++;
-                }
-                gTerm.strout[wuwuwu]='\0';
-            }
-            if(str[1]!="-"&&str[2]!="-")
-            {
-                string f1;string f2;
-                string Root=gTerm.root;
-                string Wdir=gTerm.wdir;
-                if(str[1][0]=='/')
-                {
-                    if(Root=="/") f1=str[1];
-                    if(Root!="/") f1=Root+str[1];
-
-                }
-                if(str[2][0]=='/')
-                {
-                    if(Root=="/") f2=str[2];
-                    if(Root!="/") f2=Root+str[2];
-
-                }
-                if(str[1][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f1="/"+str[1];
-                        if(Wdir!="/") f1=Wdir+"/"+str[1];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f1=Root+"/"+str[1];
-                        if(Wdir!="/") f1=Root+Wdir+"/"+str[1];
-                    }
-                }
-                if(str[2][0]!='/')
-                {
-                    if(Root=="/")
-                    {
-                        if(Wdir=="/") f2="/"+str[2];
-                        if(Wdir!="/") f2=Wdir+"/"+str[2];
-                    }
-                    if(Root!="/")
-                    {
-                        if(Wdir=="/") f2=Root+"/"+str[2];
-                        if(Wdir!="/") f2=Root+Wdir+"/"+str[2];
-                    }
-                }
-                ifstream A(f1.c_str());
-                ofstream B(f2.c_str());
-                if(!A)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                if(!B)
-                {
-                    cerr<<"no such file"<<endl;
-                    return;
-                }
-                while(!A.eof())
-                {
-                    string ch;
-                    getline(A,ch);
-                    if(A.eof()) B << ch;
-                    else B<<ch<<endl;
-                }
-                A.close();B.close();
-            }
-        }
-	}
+        fclose(source);
+    }
+    fclose(dest);
 }
 
 void doPwd(int argc, char * argv[])//显示工作目录 
 {
-	if(argc==1)
-	{
-		string out=gTerm.wdir;
-		out+="\n";
-		cinStrout(out.c_str());
-	}
-	if(argc==2&&(string)argv[1]=="--help")
-	{
-		string help[100];
-		ifstream A("pwd.txt");
-		if(!A)
-		{
-			cerr<<"no such file"<<endl;
-			return;
-		}
-		int H=0;int hhh=0;
-		while(!A.eof())
-		{
-			getline(A,help[H]);H++;
-		}
-		A.close();	
-		for(int q =0;q<H;q++)
-		{
-			for(int len=0;len<help[q].length();len++)
-			{
-				gTerm.strout[hhh]=help[q][len];hhh++;
-			}
-			gTerm.strout[hhh]='\n';hhh++;
-		}
-		gTerm.strout[hhh]='\0';	//shuchubalabla
-	}
-	if(argc>1&&(string)argv[1]!="--help")
-	{
-		cerr<<"wrong demands"<<endl;
-		return;
-	}
+	if(argc==2&&strcmp(argv[1],"--help")==0)
+        strcpy(gTerm.strout,pwdhelp);
+	else
+    {
+        cinStrout(gTerm.wdir);
+        cinStrout('\n');
+    }
 }
 void doTee(int argc,char * argv[])
 {
-	string *str=new string[argc];
-	for(int i=0;i<argc;i++)
-		str[i]=argv[i];
-	if(argc==1) strcpy(gTerm.strout,gTerm.strin);
-	else
+    strcpy(gTerm.strout,gTerm.strin);
+	if(argc==1) return;
+	if(strcmp(argv[1],"--help")==0)
 	{
-	if(str[1]=="--help")
-	{
-		string help[100];
-		ifstream A("tee.txt");
-		if(!A)
-			{
-				cerr<<"no such file"<<endl;
-				return;
-			}
-		int H=0;int hhh=0;
-		while(!A.eof())
-		{
-			getline(A,help[H]);H++;}
-		A.close();	
-		for(int q =0;q<H;q++)
-		{
-		for(int len=0;len<help[q].length();len++)
-		{
-			gTerm.strout[hhh]=help[q][len];hhh++;
-		}
-		gTerm.strout[hhh]='\n';hhh++;
-		}
-		gTerm.strout[hhh]='\0';//shuchuhelp
+        strcpy(gTerm.strout, teehelp);
+        return;
 	}
-	if(argc>1&&str[1]!="--help")
-	{
-		if(str[1]=="-a")
-		{	if(argc==2)
-				strcpy(gTerm.strout,gTerm.strin);
-			else
-			{
-				strcpy(gTerm.strout,gTerm.strin);
-				string Root=gTerm.root;
-				string Wdir=gTerm.wdir;
-				for(int i =2;i<argc;i++)
-				{
-					//处理文件名
-					string fin; 
-					if(str[i]=="-") 
-						strcpy(gTerm.strout,gTerm.strin);
-					else
-					{
-						if(str[i][0]=='/')
-						{
-							if(Root=="/") fin=str[i];
-							if(Root!="/") fin=Root+str[i];
-				
-						}
-						if(str[i][0]!='/')
-						{
-							if(Root=="/") 
-							{
-								if(Wdir=="/") fin="/"+str[i];
-								if(Wdir!="/") fin=Wdir+"/"+str[i];
-							}
-							if(Root!="/") 
-							{
-								if(Wdir=="/") fin=Root+"/"+str[i];
-								if(Wdir!="/") fin=Root+Wdir+"/"+str[i];
-							}
-						}
-						ofstream file(fin.c_str(),ios::app);
-						if(!file)
-						{
-							cerr<<"no such file"<<endl;
-							return;
-						}
-						file<<gTerm.strin;
-						file.close();	
-					}
-					
-				}
-			}
-		}
-		if(str[1]!="-a")//判断是哪种情况 
-		{	
-			if(argc==1)
-				strcpy(gTerm.strout,gTerm.strin);
-			else
-			{
-				strcpy(gTerm.strout,gTerm.strin);
-				string Root=gTerm.root;
-				string Wdir=gTerm.wdir;
-				for(int i =1;i<argc;i++)
-				{
-					//处理文件名
-					string fin; 
-					if(str[i]=="-") strcpy(gTerm.strout,gTerm.strin);
-					else
-					{
-						if(str[i][0]=='/')
-						{
-							if(Root=="/") fin=str[i];
-							if(Root!="/") fin=Root+str[i];
-				
-						}
-						if(str[i][0]!='/')
-						{
-							if(Root=="/") 
-							{
-								if(Wdir=="/") fin="/"+str[i];
-								if(Wdir!="/") fin=Wdir+"/"+str[i];
-							}
-							if(Root!="/") 
-							{
-								if(Wdir=="/") fin=Root+"/"+str[i];
-								if(Wdir!="/") fin=Root+Wdir+"/"+str[i];
-							}
-						}
-						ofstream file(fin.c_str());
-						if(!file)
-						{
-							cerr<<"no such file"<<endl;
-							return;
-						}
-						file<<gTerm.strin;
-						file.close();	
-					}
-					
-				}
-			}
-		}
-		
-	}
-	}
+    int i=1;
+    while(strcmp(argv[i],"-a")==0)i++;
+    for(;i<argc;i++)
+    {
+        if(strcmp(argv[i],"-")==0)continue;
+        FILE* writeto=
+                fopen(Physical_Path(argv[i],true),
+                      strcmp(argv[1],"-a")==0?"a":"w");
+        if(writeto==NULL)
+        {
+            output_no_file_error("tee",argv[i]);
+            return;
+        }
+        fprintf(writeto,"%s",gTerm.strin);
+        fclose(writeto);
+    }
 }	
 void doCd(int argc, char * argv[])
 {
-	if(argc!=2)
+    if(argc==1)return;
+    if(strcmp(argv[1],"--help")==0)
+    {
+        strcpy(gTerm.strout,cdhelp);
+    }
+    else if(argc>2)
+    {
+        std::cerr<<"bash: cd: too many arguments"<<std::endl;
+        return;
+    }
+    else//不需要显示帮助则将相对路径与绝对路径统一处理
 	{
-		cerr<<"wrong demands"<<endl;
-		return;
-	}
-	if((string)argv[1]=="--help")
-	{
-		string help[100];
-		ifstream A("cd.txt");
-		if(!A)
-		{
-			cerr<<"no such file"<<endl;
-			return;
-		}
-		
-		int H=0;int hhh=0;
-		while(!A.eof())
-		{
-			getline(A,help[H]);H++;
-		}
-		A.close();	
-		for(int q =0;q<H;q++)
-		{
-		for(int len=0;len<help[q].length();len++)
-		{
-			gTerm.strout[hhh]=help[q][len];hhh++;
-		}
-		gTerm.strout[hhh]='\n';hhh++;
-		}
-		gTerm.strout[hhh]='\0';
-	}
-	else//不需要显示帮助则将相对路径与绝对路径统一处理 
-	{
-		int len=strlen(argv[1]),cur=strlen(gTerm.wdir);
+		size_t len=strlen(argv[1]),cur=strlen(gTerm.wdir);
 		if(argv[1][0]=='/') cur=1;
 		for(int l=argv[1][0]=='/',r;l<len;l=r+2){//靠bool值判断起点 
 			for(r=l;r+1<len&&argv[1][r+1]!='/';r++);
@@ -1076,15 +276,14 @@ void doCd(int argc, char * argv[])
 						if(cur!=1)gTerm.wdir[--cur]=0;
 					}
 				}
-				else{;
-					// alarming
-					
-					
+				else{
+                    if(cur!=1)gTerm.wdir[cur++]='/';
+                    std::copy(argv[1]+l,argv[1]+r+1,gTerm.wdir+cur),cur+=r-l+1;
 				}
 			}
 			else{
 				if(cur!=1)gTerm.wdir[cur++]='/';
-				copy(argv[1]+l,argv[1]+r+1,gTerm.wdir+cur),cur+=r-l+1;
+				std::copy(argv[1]+l,argv[1]+r+1,gTerm.wdir+cur),cur+=r-l+1;
 			}
 				
 		}

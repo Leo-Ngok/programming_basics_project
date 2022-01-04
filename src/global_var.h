@@ -56,15 +56,16 @@ inline void cinStrout(char c){
  * \Returns:
  * char*    :       the physical location
  */
-inline char* Physical_Path(char* path)
+inline char* Physical_Path(char* path,bool have_root=false)
 {
     if(strcmp(path,"-")==0)
         return (char*)"-";
     char *return_value=new char[MAXLINE];
+    memset(return_value,0,sizeof (return_value));
     if(path[0]!='/')
     {
         strcat(return_value,gTerm.wdir);
-        strcat(return_value,"/");
+        if(gTerm.wdir[1])strcat(return_value,"/");
     }
     strcat(return_value,path);
     std::stack<std::string> st;
@@ -72,6 +73,7 @@ inline char* Physical_Path(char* path)
 
     size_t len_A = strlen(return_value);
     char* res=new char[len_A];
+    memset(res,0,sizeof (res));
     res[0]='/';
     for (int i = 0; i < len_A; i++) {
         dir.clear();
@@ -101,28 +103,36 @@ inline char* Physical_Path(char* path)
             strcat(res,"/");
         st1.pop();
     }
-    char *tmp1=new char[len_A];
-    strcpy(tmp1,gTerm.strin);
+    char *tmp1=new char[len_A+ strlen(gTerm.root)+2];
+    memset(tmp1,0,sizeof tmp1);
+    if(have_root)strcpy(tmp1,gTerm.root);
+
     strcat(tmp1,res);
     return tmp1;
 }
-inline char modified_getc(bool mode,FILE* fd=nullptr,int* pos=nullptr)
+inline char modified_getc(bool mode,FILE* fd=NULL,int* pos=NULL)
 {
     if(mode)return gTerm.strin[(*pos)++];
     else    return fgetc(fd);
 
 }
-_Document Handle_File_Input(char *path,bool end_with_lf=true,char *funcname=NULL)
+inline void output_no_file_error(const char* funcname,char* filename)
 {
-    _Document Input_Document{};
+    std::cerr<<(std::string)funcname<<": "<<(std::string)filename<<": No such file or directory"<<std::endl;
+
+}
+_Document Handle_File_Input(char *path,bool end_with_lf=true,const char *funcname=NULL)
+{
+    _Document Input_Document;
     int *itpos=new int(0);
     FILE* doc;
-    char* abs_path= Physical_Path(path);
+    char* abs_path= Physical_Path(path,true);
     if(strcmp(abs_path,"-") != 0){
         doc= fopen(abs_path,"r");
-        if(doc==nullptr)
+        if(doc==NULL)
         {
-            std::cerr<<(std::string)funcname<<": "<<(std::string)path<<": No such file or directory"<<std::endl;
+            output_no_file_error(funcname,path);
+            fclose(doc);
             return Input_Document;
         }
     }
