@@ -146,10 +146,48 @@ void judge(int hang,int hx_b)
 	}
 }
 //tg and ia are the two lines that same[tg]<=same[tg+ia]
-void change(int tg,ofstream &fcg,int ia)
+void change(int tg,ofstream &fcg,int ia,char **argv)
 {
 	//(-B) igonre blank lines
     //this branch takes blank lines into account
+	
+	if(s_g[5]==1)
+	{
+		char *Ibj=argv[I];
+		char is[100]={0};
+		int i_ls=0;
+		for(int i=strcspn(Ibj,"I")+1;i<strlen(Ibj);i++)
+		{
+			is[i_ls]=Ibj[i];
+			i_ls++;
+		}
+		bool x=0;
+        //if there is no match in some lines of FILE (1,2)
+		for(int i=same[tg].sa_a+1;i<=same[tg+ia].sa_a;i++)
+		{
+			char as[100];
+			strcpy(as,a[i].c_str());
+			char *p=strstr(as,is);
+			if(p==NULL){
+				x=1;
+			}
+		}		
+		for(int i=same[tg].sa_b+1;i<=same[tg+ia].sa_b-1;i++)
+		{
+			char bs[100];
+			strcpy(bs,b[i].c_str());
+			char *p=strstr(bs,is);
+			if(p==NULL){
+				x=1;
+			}
+		}			
+		if(x==0){
+			ofstream foutI("answer.txt");
+			foutI.close();
+			return;
+		}
+	} 
+	 //to get a list of lines which are equal
 	if(s_g[1]==0)
 	{ 
 		if((same[tg+ia].sa_a-same[tg].sa_a==1)&&(same[tg+ia].sa_b-same[tg].sa_b==1))
@@ -502,43 +540,7 @@ void doDiff(int argc, char **argv)
 	if(a[1]=="\0"&&hx_a==1)hx_a--;
 	if(b[1]=="\0"&&hx_b==1)hx_b--;
 	//consider the case when a matching string is provided
-	if(s_g[5]==1)
-	{
-		char *Ibj=argv[I];
-		char is[100]={0};
-		int i_ls=0;
-		for(int i=strcspn(Ibj,"I")+1;i<strlen(Ibj);i++)
-		{
-			is[i_ls]=Ibj[i];
-			i_ls++;
-		}
-		bool x=0;
-        //if there is no match in some lines of FILE (1,2)
-		for(int i=1;i<=hx_a;i++)
-		{
-			char as[100];
-			strcpy(as,a[i].c_str());
-			char *p=strstr(as,is);
-			if(p==NULL){
-				x=1;
-			}
-		}		
-		for(int i=1;i<=hx_b;i++)
-		{
-			char bs[100];
-			strcpy(bs,b[i].c_str());
-			char *p=strstr(bs,is);
-			if(p==NULL){
-				x=1;
-			}
-		}			
-		if(x==0){
-			ofstream foutI("answer.txt");
-			foutI.close();
-			return;
-		}
-	} 
-	 //to get a list of lines which are equal
+	
 	for(int hang=1;hang<=hx_a;hang++)
 	{
 		judge(hang,hx_b);
@@ -578,7 +580,7 @@ void doDiff(int argc, char **argv)
 		while(same[tg].sa_b-same[tg+ia].sa_b>0){
 			ia++;
 		}
-		change(tg,fcg,ia);
+		change(tg,fcg,ia,argv);
 		tg+=ia-1;
 	}
 	fcg.close();
