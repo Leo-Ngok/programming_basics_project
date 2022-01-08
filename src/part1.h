@@ -168,7 +168,7 @@ void change(int tg,ofstream &fcg,int ia,char **argv)
 			char as[100];
 			strcpy(as,a[i].c_str());
 			char *p=strstr(as,is);
-			if(p==NULL||((s_g[1]==1)&&a[i]=="\0")){
+			if(p==NULL){
 				x=1;
 			}
 		}		
@@ -177,7 +177,7 @@ void change(int tg,ofstream &fcg,int ia,char **argv)
 			char bs[100];
 			strcpy(bs,b[i].c_str());
 			char *p=strstr(bs,is);
-			if(p==NULL||((s_g[1]==1)&&b[i]=="\0")){
+			if(p==NULL){
 				x=1;
 			}
 		}			
@@ -373,11 +373,12 @@ void doDiff(int argc, char **argv)
     //check if path exists
 	if(argc!=2)
 	{
+		bool x=0;
 		ifstream fina;
 		fina.open(Physical_Path(argv[argc-2],true));
 		if(!fina){
 		cerr<<"diff: "<<argv[argc-2]<<": "<<"No such file or dictionary"<<endl;
-		zs2=0;
+		zs2=0;x=1;
 		}
 		fina.close();
 		
@@ -385,10 +386,10 @@ void doDiff(int argc, char **argv)
         finb.open(Physical_Path(argv[argc-1],true));
 		if(!finb){
 		cerr<<"diff: "<<argv[argc-1]<<": "<<"No such file or dictionary"<<endl;
-		zs2=0;
+		zs2=0;x=1;
 		}
 		finb.close();
-		cerr<<"Try 'diff --help' for more information"<<endl;
+		if(x)cerr<<"Try 'diff --help' for more information"<<endl;
 	} 
 	//continue only if all arguments and files are valid
 	if((zs0==0)||(zs1==0)||(zs2==0))return; 

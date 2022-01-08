@@ -215,6 +215,7 @@ inline int tokenize()
         }
         else if(c==';')
         {
+            push_word();
             if(vec_argv.empty())
             {
                 sytxerr(c);
