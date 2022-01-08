@@ -168,7 +168,7 @@ void change(int tg,ofstream &fcg,int ia,char **argv)
 			char as[100];
 			strcpy(as,a[i].c_str());
 			char *p=strstr(as,is);
-			if(p==NULL){
+			if(p==NULL||((s_g[1]==1)&&a[i]=="\0")){
 				x=1;
 			}
 		}		
@@ -177,7 +177,7 @@ void change(int tg,ofstream &fcg,int ia,char **argv)
 			char bs[100];
 			strcpy(bs,b[i].c_str());
 			char *p=strstr(bs,is);
-			if(p==NULL){
+			if(p==NULL||((s_g[1]==1)&&b[i]=="\0")){
 				x=1;
 			}
 		}			
