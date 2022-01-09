@@ -29,6 +29,8 @@ cat -b -s Server.py
 cat -b -n CONFIG_LEGACY.json
 cp  CONFIG_LEGACY.json ../echo_help.txt
 cat ../echo_help.txt
+echo --help|tee -a ../echo_help.txt
+cat ../echo_help.txt
 #-----------illustrations of diff-------------------
 echo \"IPv4_location\"|diff -IIPv4 - CONFIG_CURR.json
 diff    CONFIG_LEGACY.json CONFIG_CURR.json

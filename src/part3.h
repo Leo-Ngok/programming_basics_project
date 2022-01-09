@@ -90,7 +90,7 @@ void doCat(int argc, char * argv[])
         return;
 	}//输出help
     int linenum=0;
-    int buffer,pprev=0,prev='\n';
+    char buffer,pprev=0,prev='\n';
     for(;i<argc;i++)
     {
         int *pos=new int(0);
@@ -110,13 +110,14 @@ void doCat(int argc, char * argv[])
         while(buffer>0)
         {
             //if it is a consecutive blank line
-            bool consecutive_line_empty=pprev==prev&&prev==buffer&&buffer=='\n';
+            bool consecutive_line_empty=((pprev==prev)&&(prev==buffer)&&(buffer=='\n'));
             //if -s (suppress repeated empty lines is enabled)
             if(consecutive_line_empty&&flag[2])goto next_iter;
             //output line number
             if((flag[0]||flag[1])&&prev=='\n')
             {
-                if(!flag[1]||(flag[1]&&buffer!='\n'))
+
+                if((flag[0]&&!flag[1])||(flag[1]&&buffer!='\n'))
                 {
                     linenum++;
                     int t=linenum,iiii=0;
