@@ -374,6 +374,8 @@ void doDiff(int argc, char **argv)
 	if(argc!=2)
 	{
 		bool x=0;
+		if(strcmp("-",argv[argc-2])!=0)
+		{
 		ifstream fina;
 		fina.open(Physical_Path(argv[argc-2],true));
 		if(!fina){
@@ -381,7 +383,10 @@ void doDiff(int argc, char **argv)
 		zs2=0;x=1;
 		}
 		fina.close();
+		}
 		
+		if(strcmp("-",argv[argc-1])!=0)
+		{
 		ifstream finb;
         finb.open(Physical_Path(argv[argc-1],true));
 		if(!finb){
@@ -389,6 +394,8 @@ void doDiff(int argc, char **argv)
 		zs2=0;x=1;
 		}
 		finb.close();
+		}
+		
 		if(x)cerr<<"Try 'diff --help' for more information"<<endl;
 	} 
 	//continue only if all arguments and files are valid
@@ -455,7 +462,7 @@ void doDiff(int argc, char **argv)
 			while(!(gTerm.strin[i]=='\0'))
 			{
 				ofstream fout_strina1("-a.txt");
-				while(gTerm.strin[i]!='\n'){
+				while(gTerm.strin[i]!='\n'&&gTerm.strin[i]!='\0'){
 					fout_strina1<<gTerm.strin[i];
 					i++;
 				}
@@ -465,6 +472,7 @@ void doDiff(int argc, char **argv)
 				hx_a++;
 				i++; 
 			}
+			hx_a--;
 			ifstream fin2;
         	fin2.open(Physical_Path(argv[argc-1],true));
         	while(true)
@@ -493,6 +501,7 @@ void doDiff(int argc, char **argv)
 				hx_b++;
 				i++; 
 			}
+			hx_b--;
 			ifstream fin1;
 		    fin1.open(Physical_Path(argv[argc-2],true));
 			printf("%s\n",Physical_Path(argv[argc-2],true));
@@ -521,13 +530,13 @@ void doDiff(int argc, char **argv)
 				hx_a++;
 				i++; 
 			}
-			
-			int j=i+1;
+			hx_a--;
+			int j=0;
 			while(!(gTerm.strin[j]=='\0'))
 			{
                 ofstream fout_strinb1("-b.txt");
                 while(gTerm.strin[j]!='\n'){
-                    fout_strinb1<<gTerm.strin[i];
+                    fout_strinb1<<gTerm.strin[j];
                     j++;
                 }
                 fout_strinb1.close();
@@ -536,6 +545,7 @@ void doDiff(int argc, char **argv)
                 hx_b++;
                 j++;
 			}
+			hx_b--;
 		}
 	} 
 	if(a[1]=="\0"&&hx_a==1)hx_a--;
