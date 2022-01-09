@@ -379,7 +379,7 @@ void doDiff(int argc, char **argv)
 		ifstream fina;
 		fina.open(Physical_Path(argv[argc-2],true));
 		if(!fina){
-		cerr<<"diff: "<<argv[argc-2]<<": "<<"No such file or dictionary"<<endl;
+		cerr<<"diff: "<<argv[argc-2]<<": "<<"No such file or directory"<<endl;
 		zs2=0;x=1;
 		}
 		fina.close();
@@ -390,7 +390,7 @@ void doDiff(int argc, char **argv)
 		ifstream finb;
         finb.open(Physical_Path(argv[argc-1],true));
 		if(!finb){
-		cerr<<"diff: "<<argv[argc-1]<<": "<<"No such file or dictionary"<<endl;
+		cerr<<"diff: "<<argv[argc-1]<<": "<<"No such file or directory"<<endl;
 		zs2=0;x=1;
 		}
 		finb.close();
