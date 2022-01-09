@@ -34,7 +34,7 @@ int main(int argc,char **argv)
         }
         catch(const std::exception& e)
         {
-            std::cerr<< "Error caught while running, see the message below"<<std::endl;
+            std::cerr<< "Error caught while running, see the message below."<<std::endl;
             
             std::cerr << e.what() << std::endl;
             std::cerr<<"Please report this bug to yuezq21@mails.tsinghua.edu.cn"<<std::endl;

@@ -276,7 +276,7 @@ void doGrep(int argc, char* argv[]){
                     file_cnt++;
                 }
                 else if(!fin){ // 文件不存在
-                    std::cerr<<"grep: "<<argv[i]<<": No such file or directory"<<endl;
+                    std::cerr<<"grep: "<<argv[i]<<": No such file or directory"<<std::endl;
                 }
                 fin.close();
             }    
@@ -331,8 +331,8 @@ void doGrep(int argc, char* argv[]){
             }
             // more args......
 
-            std::cerr<<"grep: invalid option "<<red<<argv[i]<<white<<endl;
-            std::cerr<<"Usage: grep [OPTION]... PATTERNS [FILE]...\nTry 'grep --help' for more information."<<endl;
+            std::cerr<<"grep: invalid option "<<red<<argv[i]<<white<<std::endl;
+            std::cerr<<"Usage: grep [OPTION]... PATTERNS [FILE]...\nTry 'grep --help' for more information."<<std::endl;
         }
     }
     Analyse(args); // 传好了一堆参数

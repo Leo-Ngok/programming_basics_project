@@ -152,13 +152,7 @@ void doCat(int argc, char * argv[])
 	
 void doCp(int argc, char * argv[])
 {
-	if(argc==1)
-	{
-		std::cerr<<"cp: missing file operand"<<std::endl;
-        std::cerr<<"Try 'cp --help' for more information."<<std::endl;
-		return;
-	}
-	if(strcmp(argv[1],"--help")==0)
+	if((argc>=2)&&strcmp(argv[1],"--help")==0)
 	{
 		//shurubangzhu; 
         strcpy(gTerm.strout,cphelp);
@@ -166,7 +160,7 @@ void doCp(int argc, char * argv[])
 	}
     int i=1;
     bool no_clobber=false;
-    while(strcmp(argv[i],"-n")==0)
+    while(i<argc&&strcmp(argv[i],"-n")==0)
     {
         i++;
         no_clobber=true;
@@ -174,6 +168,19 @@ void doCp(int argc, char * argv[])
     if(argc-i>2)
     {
         std::cerr<<"bash: cp: too many arguments"<<std::endl;
+        std::cerr<<"Try 'cp --help' for more information."<<std::endl;
+        return;
+    }
+    if(argc==i)
+    {
+        std::cerr<<"cp: missing file operand"<<std::endl;
+        std::cerr<<"Try 'cp --help' for more information."<<std::endl;
+        return;
+    }
+    if(argc==1+i)
+    {
+        std::cerr<<"cp: missing destination file operand after "<<(string)argv[i]<<std::endl;
+        std::cerr<<"Try 'cp --help' for more information."<<std::endl;
         return;
     }
     if(strcmp(argv[i],argv[i+1])==0&&!no_clobber)
