@@ -582,6 +582,7 @@ void doDiff(int argc, char **argv)
             sc();
             return;
 		}
+		return;
 	}
 	
 	ofstream fcg("answer.txt");
